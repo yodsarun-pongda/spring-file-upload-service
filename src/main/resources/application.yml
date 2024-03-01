@@ -1,0 +1,48 @@
+server:
+  port: 8080
+  servlet:
+    contextPath: /api
+
+spring:
+  application:
+    name: demo
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&useSSL=true&characterEncoding=UTF-8&characterSetResults=UTF-8
+    username: root
+    password: p@ssword
+  jpa:
+    show-sql: false
+  properties:
+    hibernate:
+      format_sql: true
+
+management:
+  health:
+    diskspace:
+      enabled: true
+    db:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+    web:
+      exposure:
+        include: '*'
+
+logging:
+  level:
+    root: INFO
+
+email-config:
+  user-name: #EMAIL_SENDER_USERNAME#
+  app-password: #YOUR_APPLICATION_PASSWORD#
+
+app-config:
+  upload-file:
+    mail-subject: '[Demo] File Uploader Service - Yodsarun interview'
+    mail-template: file-upload-service-template.html
+    save-path: src/main/resources/files
+    allow-extension: txt,csv,text
+  auth:
+    auth-key: vIocOix5KE9EqkurBkTU

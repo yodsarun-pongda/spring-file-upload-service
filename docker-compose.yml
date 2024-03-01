@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0.34
+    restart: always
+    environment:
+      - MYSQL_ROOT_USER=root
+      - MYSQL_ROOT_PASSWORD=p@ssword
+      - MYSQL_DATABASE=demo
+      - TZ=Asia/Bangkok
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ./docker/init.sql:/data/application/init.sql
+      - ./docker/db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - demo-network
+
+networks:
+  demo-network:
+    driver: bridge

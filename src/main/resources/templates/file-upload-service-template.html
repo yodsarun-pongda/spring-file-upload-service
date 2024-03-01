@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</header>
+<body>
+    <h2>Hello, <span th:text="${name}"></span></h2>
+    <div th:if="${is_success}">
+        Your file '<span th:text="${file_name}"></span>' had upload completed.
+    </div>
+    <div th:unless="${is_success}">
+        Your file '<span th:text="${file_name}"></span>' can not upload to cloud.
+    </div>
+
+    <p style="font-style: italic; font-size: 10px;">This Email have been generated from automation System to be a demo spring boot program</p>
+
+    <br><br>
+    <p>Best Regards,</p>
+    <p>Mr.Yodsarun Pongda</p>
+    <p>Software Engineer</p>
+</body>
+</html>
