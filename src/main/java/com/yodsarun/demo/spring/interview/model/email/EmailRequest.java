@@ -9,7 +9,6 @@ import java.util.Map;
 @Data
 @Builder
 public class EmailRequest {
-    private String mailForm;
     private String mailTo;
     private String subject;
     private String template;

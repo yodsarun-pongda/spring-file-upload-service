@@ -38,27 +38,28 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public ResponseModel<UploadFileResponse> uploadFileAndSendEmail(MultipartFile multipartFile,
-                                                                    String name) {
+                                                                    String customerName) {
         File file = null;
-        CustomerEntity customerEntity = null;
-        var fileName = multipartFile.getOriginalFilename();
-        var isSuccess = false;
         try {
             // validate request
-            validateFileRequest(multipartFile, name);
+            validateFileRequest(multipartFile, customerName);
 
-            customerEntity = customerRepository.findCustomerEntityByName(name);
+            var fileName = multipartFile.getOriginalFilename();
+            var customerEntity = customerRepository.findCustomerEntityByName(customerName);
             if (ObjectUtils.isEmpty(customerEntity)) {
                 log.error("customer was not found");
                 throw new BusinessException("Customer not found", HttpStatus.NOT_FOUND);
             }
 
-
             // Generate file to local storage
             file = convertMultiPartToFile(multipartFile);
 
             // Upload file to cloud server
-            isSuccess = cloudStorageService.uploadFileToStorage(file);
+            var filePath = file.getAbsolutePath();
+            var isSuccess = cloudStorageService.uploadFileToStorage(filePath);
+
+            // Send customer notification
+            sentEmail(customerEntity, fileName, isSuccess);
 
             // Response
             var response = UploadFileResponse.builder()
@@ -70,11 +71,8 @@ public class FileUploadServiceImpl implements FileUploadService {
             throw e;
         } catch (Exception e) {
             log.error("Error occurred when upload process upload file to server", e);
-            throw new BusinessException(ExceptionUtils.getRootCauseMessage(e), HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new BusinessException(ExceptionUtils.getMessage(e), HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
-            // Send customer notification
-            sentEmail(customerEntity, fileName, isSuccess);
-
             if (file != null) {
                 // Remove converted file on local storage
                 file.deleteOnExit();
@@ -84,7 +82,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     private void validateFileRequest(MultipartFile multipartFile,
                                      String name) {
-        if (multipartFile.isEmpty()) {
+        if (ObjectUtils.isEmpty(multipartFile) || multipartFile.isEmpty()) {
             throw new BusinessException("Request file is missing", HttpStatus.BAD_REQUEST);
         }
 
@@ -92,7 +90,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             throw new BusinessException("Request File extension is not allowed", HttpStatus.BAD_REQUEST);
         }
 
-        if (StringUtils.isBlank(name)) {
+        if (StringUtils.isEmpty(name)) {
             throw new BusinessException("Request property name is missing", HttpStatus.BAD_REQUEST);
         }
     }

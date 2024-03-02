@@ -19,8 +19,8 @@ public class FileUploadController {
     private final FileUploadService fileUploadService;
 
     @PostMapping(value = "/upload/file", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseModel<UploadFileResponse>> uploadFileController(@RequestParam(value = "file") MultipartFile file,
-                                                                                  @RequestParam(value = "name") String name) {
+    public ResponseEntity<ResponseModel<UploadFileResponse>> uploadFileController(@RequestParam(value = "file", required = false) MultipartFile file,
+                                                                                  @RequestParam(value = "name", required = false) String name) {
         // @valid can be use in this case but, i want to custom response message
         return ResponseEntity.ok().body(fileUploadService.uploadFileAndSendEmail(file, name));
     }
